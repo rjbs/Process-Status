@@ -3,6 +3,8 @@ use warnings;
 package Process::Status;
 # ABSTRACT: a handle on process termination, like $?
 
+use Config ();
+
 =head1 OVERVIEW
 
 When you run a system command with C<system> or C<qx``> or a number of other
@@ -68,7 +70,7 @@ This returns the signal caught by the process, or zero.
 
 =cut
 
-sub signal     { ${ $_[0]->_self } &  127 }
+sub signal     { ${ $_[0]->_self } & 127 }
 
 =method cored
 
@@ -76,7 +78,7 @@ This method returns true if the process dumped core.
 
 =cut
 
-sub cored      { ${ $_[0]->_self } &  128 }
+sub cored      { !! (${ $_[0]->_self } & 128) }
 
 =method as_struct
 
@@ -94,10 +96,32 @@ sub as_struct {
     pid_t => $pid_t,
     ($pid_t == -1 ? () : (
       exitstatus => $pid_t >> 8,
-      signal     => $pid_t & 127,
-      cored      => $pid_t & 128,
+      cored      => ($pid_t & 128) ? 1 : 0,
+
+      (($pid_t & 127) ? (signal => $pid_t & 127) : ())
     )),
   };
+}
+
+my %SIGNAME;
+sub __signal_name {
+  my ($signal) = @_;
+  unless (%SIGNAME) {
+    my @names = split /\x20/, $Config::Config{sig_name};
+    $SIGNAME{$_} = "SIG$names[$_]" for (1 .. $#names);
+  }
+
+  return($SIGNAME{ $signal } || "signal $signal");
+}
+
+sub as_string {
+  my $self  = $_[0]->_self;
+  my $pid_t = $$self;
+  my $str  = "exited " . ($pid_t >> 8);
+  $str .= ", caught " . __signal_name($pid_t & 127) if $pid_t & 127;
+  $str .= "; dumped core" if $pid_t & 128;
+
+  return $str;
 }
 
 1;

@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.003     2014-04-01 14:33:56-04:00 America/New_York
         - handle negative $? better (it's what you get if you say
           `this-does-not-exist`)
 

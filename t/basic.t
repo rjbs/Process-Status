@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 use Test::More;
+
+use Errno qw(ENOENT);
 use Process::Status;
 
 subtest "pid_t == 31488" => sub {
@@ -35,7 +37,33 @@ subtest "pid_t == 395" => sub {
   is(
     $status->as_string,
     "exited 1, caught SIGSEGV; dumped core",
+    "->as_string is as expected",
+  );
+};
+
+subtest "pid_t == -1" => sub {
+  $! = ENOENT;
+  my $num = 0+$!;
+  my $str = "$!";
+
+  my $status = Process::Status->new(-1);
+
+  undef $!;
+
+  is($status->exitstatus, -1, "exit status 1");
+  ok(! $status->signal,       "didn't catch a signal");
+  ok(! $status->cored,        "didn't dump core");
+
+  is_deeply(
+    $status->as_struct,
+    { pid_t => -1, strerror => $str, errno => $num },
     "->as_struct is as expected",
+  );
+
+  is(
+    $status->as_string,
+    qq{did not run; \$? was -1, \$! was "$str" (errno $num)},
+    "->as_string is as expected",
   );
 };
 

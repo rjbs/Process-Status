@@ -34,7 +34,9 @@ sub _self { ref $_[0] ? $_[0] : $_[0]->new($?); }
 
 sub new {
   my $pid_t = defined $_[1] ? $_[1] : $?;
-  bless \$pid_t, $_[0];
+  return bless \$pid_t, $_[0] if $pid_t >= 0;
+
+  return bless [ $pid_t, "$!", 0+$! ], 'Process::Status::Negative';
 }
 
 =method pid_t
@@ -122,6 +124,29 @@ sub as_string {
   $str .= "; dumped core" if $pid_t & 128;
 
   return $str;
+}
+
+{
+  package Process::Status::Negative;
+
+  BEGIN { our @ISA = 'Process::Status' }
+  sub pid_t { $_[0][0] }
+  sub is_success { return }
+  sub exitstatus { $_[0][0] }
+  sub signal     { 0 }
+  sub cored      { return }
+
+  sub as_struct {
+    return {
+      pid_t    => $_[0][0],
+      strerror => $_[0][1],
+      errno    => $_[0][2],
+    }
+  }
+
+  sub as_string {
+    qq{did not run; \$? was $_[0][0], \$! was "$_[0][1]" (errno $_[0][2])}
+  }
 }
 
 1;

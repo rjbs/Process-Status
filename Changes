@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - handle negative $? better (it's what you get if you say
+          `this-does-not-exist`)
 
 0.002     2013-12-31 12:34:55 America/New_York
         - tweaks here and there, mostly add ->as_string

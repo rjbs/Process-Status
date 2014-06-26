@@ -5,7 +5,7 @@ use Test::More;
 use Errno qw(ENOENT);
 use Process::Status;
 
-subtest "return_code == 31488" => sub {
+subtest "status_code == 31488" => sub {
   my $status = Process::Status->new(123 << 8);
 
   is($status->exitstatus, 123, "exit status 123");
@@ -14,14 +14,14 @@ subtest "return_code == 31488" => sub {
 
   is_deeply(
     $status->as_struct,
-    { return_code => 31488, exitstatus => 123, cored => 0 },
+    { status_code => 31488, exitstatus => 123, cored => 0 },
     "->as_struct is as expected",
   );
 
   is($status->as_string, "exited 123", "->as_string is as expected");
 };
 
-subtest "return_code == 395" => sub {
+subtest "status_code == 395" => sub {
   my $status = Process::Status->new(395);
 
   is($status->exitstatus,  1, "exit status 1");
@@ -30,7 +30,7 @@ subtest "return_code == 395" => sub {
 
   is_deeply(
     $status->as_struct,
-    { return_code => 395, exitstatus => 1, signal => 11, cored => 1 },
+    { status_code => 395, exitstatus => 1, signal => 11, cored => 1 },
     "->as_struct is as expected",
   );
 
@@ -41,7 +41,7 @@ subtest "return_code == 395" => sub {
   );
 };
 
-subtest "return_code == -1" => sub {
+subtest "status_code == -1" => sub {
   $! = ENOENT;
   my $num = 0+$!;
   my $str = "$!";
@@ -56,7 +56,7 @@ subtest "return_code == -1" => sub {
 
   is_deeply(
     $status->as_struct,
-    { return_code => -1, strerror => $str, errno => $num },
+    { status_code => -1, strerror => $str, errno => $num },
     "->as_struct is as expected",
   );
 

@@ -39,14 +39,14 @@ sub new {
   return bless [ $status, "$!", 0+$! ], 'Process::Status::Negative';
 }
 
-=method return_code
+=method status_code
 
 This returns the value of the integer return value, as you might have found in
 C<$?>.
 
 =cut
 
-sub return_code {
+sub status_code {
   ${ $_[0]->_self }
 }
 
@@ -98,10 +98,10 @@ change over time; it is meant for human, not computer, consumption.
 sub as_struct {
   my $self = $_[0]->_self;
 
-  my $rc = $self->return_code;
+  my $rc = $self->status_code;
 
   return {
-    return_code => $rc,
+    status_code => $rc,
     ($rc == -1 ? () : (
       exitstatus => $rc >> 8,
       cored      => ($rc & 128) ? 1 : 0,
@@ -136,7 +136,7 @@ sub as_string {
   package Process::Status::Negative;
 
   BEGIN { our @ISA = 'Process::Status' }
-  sub return_code { $_[0][0] }
+  sub status_code { $_[0][0] }
   sub pid_t       { $_[0][0] } # historical nonsense
   sub is_success  { return }
   sub exitstatus  { $_[0][0] }
@@ -145,7 +145,7 @@ sub as_string {
 
   sub as_struct {
     return {
-      return_code => $_[0][0],
+      status_code => $_[0][0],
       strerror    => $_[0][1],
       errno       => $_[0][2],
     }

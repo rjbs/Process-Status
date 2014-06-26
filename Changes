@@ -1,9 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
-
-0.004     2014-06-26 15:54:58-04:00 America/New_York
-        - remove bizarre mis-use of pid_t; it's now return_code
+        - remove bizarre mis-use of pid_t; it's now status_code
 
 0.003     2014-04-01 14:33:56-04:00 America/New_York
         - handle negative $? better (it's what you get if you say

@@ -13,9 +13,8 @@ In C, it's just an integer, and it stores a few pieces of data in different
 bits.
 
 Process::Status just provides a few simple methods to make it easier to
-inspect.  Almost the sole reason it exists is for its C<as_struct> method,
-which can be passed to a pretty printer to dump C<$?> in a somewhat more
-human-readable format.
+inspect.  It exists almost entirely to provide C<as_struct> and C<as_string>,
+which provide a simple decomposition of C<$?>.
 
 Methods called on C<Process::Status> without first calling a constructor will
 work on an implicitly-constructed object using the current value of C<$?>.  To
@@ -121,6 +120,20 @@ sub __signal_name {
 
   return($SIGNAME{ $signal } || "signal $signal");
 }
+
+=method as_string
+
+This method returns a string describing the status.  Its exact contents may
+change over time; it is meant for human, not computer, consumption.
+
+Roughly, you might get things like this:
+
+  exited 0
+  exited 92
+  exited 2, caught SIGDERP
+  exited 2, caught SIGSEGV; dumped core
+
+=cut
 
 sub as_string {
   my $self = $_[0]->_self;

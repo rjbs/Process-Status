@@ -145,6 +145,28 @@ sub as_string {
   return $str;
 }
 
+=method assert_ok
+
+  Process::Status->assert_ok($program_name);
+
+This method does nothing if C<$?> is 0.  Otherwise, it croaks with a message
+like:
+
+  your-program-name exited 13, caught SIGNES
+
+If a program name is not provided, "program" is used.
+
+=cut
+
+sub assert_ok {
+  my $self = $_[0]->_self;
+  return if $$self == 0;
+  my $name = @_ > 1 ? $_[1] : "program";
+
+  require Carp;
+  Carp::croak("$name " . $self->as_string);
+}
+
 {
   package Process::Status::Negative;
 

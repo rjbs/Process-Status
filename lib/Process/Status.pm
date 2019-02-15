@@ -189,6 +189,12 @@ sub assert_ok {
   sub as_string {
     qq{did not run; \$? was $_[0][0], \$! was "$_[0][1]" (errno $_[0][2])}
   }
+
+  sub assert_ok {
+    require Carp;
+    my $name = @_ > 1 ? $_[1] : "program";
+    Carp::croak("$name " . $_[0]->as_string);
+  }
 }
 
 1;

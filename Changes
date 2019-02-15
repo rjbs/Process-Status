@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - fix behavior of assert_ok on negative statuses (thanks, Michael
+          McClimon)
 
 0.007     2015-11-25 23:15:24-05:00 America/New_York
         - add assert_ok method

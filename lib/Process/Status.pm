@@ -160,7 +160,7 @@ If a program name is not provided, "program" is used.
 
 sub assert_ok {
   my $self = $_[0]->_self;
-  return if $$self == 0;
+  return if ref $self eq 'SCALAR' && $$self == 0;
   my $name = @_ > 1 ? $_[1] : "program";
 
   require Carp;
